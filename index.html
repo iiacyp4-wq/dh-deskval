@@ -1,0 +1,1047 @@
+<title>DH의 탁상감정</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F3F4F7; --surface:#FFFFFF; --sunken:#EBEDF2; --line:#D6DAE2; --line-strong:#B9BFCB;
+  --ink:#1B2130; --ink-2:#4A5262; --ink-3:#7A8292;
+  --seal:#B3261E; --seal-soft:#F7E3E1;
+  --blue:#2F4C7A; --blue-soft:#E3EAF5; --blue-ink:#233A5E;
+  --good:#2E7D4F; --good-soft:#E1F1E7; --warn:#A8690F; --warn-soft:#F8EAD0; --crit:#B3261E;
+  --shadow:0 1px 2px rgba(27,33,48,.06), 0 8px 24px -12px rgba(27,33,48,.18);
+  --serif:"Gowun Batang","Nanum Myeongjo","Batang",serif;
+  --sans:"IBM Plex Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --radius:6px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12161E; --surface:#1A2029; --sunken:#151A22; --line:#2B3342; --line-strong:#3D4757;
+    --ink:#E7EAF0; --ink-2:#B4BBC8; --ink-3:#7F8898;
+    --seal:#E0605A; --seal-soft:#3A2321;
+    --blue:#8AAAE0; --blue-soft:#20293A; --blue-ink:#C6D5F0;
+    --good:#6FC28E; --good-soft:#1C2F24; --warn:#E0A94E; --warn-soft:#332A18; --crit:#E0605A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161E; --surface:#1A2029; --sunken:#151A22; --line:#2B3342; --line-strong:#3D4757;
+  --ink:#E7EAF0; --ink-2:#B4BBC8; --ink-3:#7F8898;
+  --seal:#E0605A; --seal-soft:#3A2321;
+  --blue:#8AAAE0; --blue-soft:#20293A; --blue-ink:#C6D5F0;
+  --good:#6FC28E; --good-soft:#1C2F24; --warn:#E0A94E; --warn-soft:#332A18; --crit:#E0605A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+a{color:var(--blue)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}
+.small{font-size:12px}
+
+/* ---------- app frame ---------- */
+.app{min-height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .name{font-family:var(--serif);font-weight:700;font-size:19px;letter-spacing:-.01em}
+.brand .sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.casebox{display:flex;align-items:center;gap:8px;flex:1;min-width:220px}
+.casebox input{flex:1;min-width:120px;border:1px solid var(--line);background:var(--sunken);border-radius:var(--radius);padding:7px 10px}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius);padding:7px 12px;cursor:pointer;line-height:1.2;white-space:nowrap}
+.btn:hover{background:var(--sunken)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.nav button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0F1420}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0F1420}}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.body{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0}
+.nav{border-right:1px solid var(--line);background:var(--surface);padding:18px 12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);align-self:start;height:calc(100vh - 58px);overflow:auto}
+.nav .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 10px 8px}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--ink-2)}
+.nav button .step{font-family:var(--mono);font-size:11px;color:var(--ink-3);width:14px}
+.nav button.active{background:var(--blue-soft);color:var(--blue-ink);font-weight:600}
+.nav button.active .step{color:var(--blue)}
+.nav .navfoot{margin-top:18px;padding:12px 10px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);line-height:1.5}
+.main{padding:24px 28px 120px;max-width:1120px;width:100%}
+section.panel{display:none}
+section.panel.active{display:block}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.ph h2{font-family:var(--serif);font-size:24px;font-weight:700}
+.ph p{margin:4px 0 0;color:var(--ink-2);max-width:62ch}
+
+/* ---------- cards & forms ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:16px}
+.card h3{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 .hint{font-weight:400;color:var(--ink-3);font-size:12px}
+.grid{display:grid;gap:12px 16px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.grid.c2{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;color:var(--ink-2)}
+.field label b{color:var(--ink)}
+.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:7px 9px;width:100%;min-width:0}
+.field input.num,.field input.money,.field input.pct{text-align:right;font-family:var(--mono)}
+.field textarea{min-height:64px;resize:vertical}
+.field .aux{font-size:12px;color:var(--ink-3);font-family:var(--mono);min-height:16px}
+.span2{grid-column:span 2}
+.span3{grid-column:span 3}
+@media (max-width:640px){.span2,.span3{grid-column:span 1}}
+.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.02em;border:1px solid transparent}
+.pill.blue{background:var(--blue-soft);color:var(--blue-ink)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.seal{background:var(--seal-soft);color:var(--seal)}
+.pill.ghost{border-color:var(--line-strong);color:var(--ink-2)}
+.note{background:var(--sunken);border-left:3px solid var(--line-strong);padding:10px 12px;border-radius:0 var(--radius) var(--radius) 0;font-size:13px;color:var(--ink-2)}
+.note.warn{border-left-color:var(--warn);background:var(--warn-soft);color:var(--ink)}
+.note.seal{border-left-color:var(--seal);background:var(--seal-soft);color:var(--ink)}
+
+/* ---------- tables ---------- */
+.twrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th,table.t td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.t th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;white-space:nowrap;background:var(--sunken)}
+table.t td.r,table.t th.r{text-align:right}
+table.t td input,table.t td select{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:5px 7px;width:100%;min-width:72px}
+table.t td input.num,table.t td input.money,table.t td input.pct{text-align:right;font-family:var(--mono)}
+table.t td.out{font-family:var(--mono);text-align:right;white-space:nowrap}
+table.t tr.total td{font-weight:600;border-top:2px solid var(--line-strong);background:var(--sunken)}
+table.t td.name{min-width:140px}
+
+/* ---------- result strip ---------- */
+.result{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
+.result .tile{background:var(--sunken);border-radius:var(--radius);padding:10px 12px}
+.result .tile .k{font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+.result .tile .v{font-family:var(--mono);font-size:18px;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result .tile.hero{background:var(--blue-soft)}
+.result .tile.hero .v{color:var(--blue-ink)}
+.formula{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:8px;word-break:break-all}
+
+/* ---------- checklist ---------- */
+.chk{display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.chk:last-child{border-bottom:0}
+.chk input[type=checkbox]{width:18px;height:18px;margin-top:3px;accent-color:var(--blue)}
+.chk .ttl{font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chk .what{color:var(--ink-2);font-size:13px;margin:2px 0 6px}
+.chk .links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.chk .links a{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;text-decoration:none;color:var(--blue)}
+.chk .links a:hover{background:var(--blue-soft)}
+.chk textarea{width:100%;border:1px solid var(--line);border-radius:4px;padding:6px 8px;min-height:36px;background:var(--surface);resize:vertical;font-size:13px}
+.chk.done .ttl{color:var(--ink-3)}
+.progress{height:6px;background:var(--sunken);border-radius:999px;overflow:hidden;flex:1;min-width:120px}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .2s}
+
+/* ---------- method tabs ---------- */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tabs button{border:0;background:transparent;padding:10px 14px;cursor:pointer;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.tabs button.active{color:var(--blue-ink);border-bottom-color:var(--blue);font-weight:600}
+.tabs button .pill{font-weight:600}
+.mtab{display:none}
+.mtab.active{display:block}
+
+/* ---------- conclusion bar ---------- */
+.concl{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px -12px rgba(0,0,0,.25);padding:10px 20px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.concl .k{font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+.concl .v{font-family:var(--mono);font-size:17px;font-weight:500}
+.concl .v.big{font-size:20px;color:var(--blue-ink)}
+.concl .sp{flex:1}
+.concl .state{font-size:12px;color:var(--ink-3)}
+
+/* ---------- report ---------- */
+.report{background:var(--surface);border:1px solid var(--line);padding:36px 40px;max-width:820px;margin:0 auto;font-family:var(--serif);color:var(--ink);position:relative;box-shadow:var(--shadow)}
+.report .rh{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.report .rh h2{font-size:24px;font-weight:700;letter-spacing:.02em}
+.report .rh .en{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.report .rh .meta{font-family:var(--sans);font-size:12px;color:var(--ink-2);text-align:right}
+.report h4{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 8px;padding-left:8px;border-left:3px solid var(--seal)}
+.report table.rt{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--sans)}
+.report table.rt th,.report table.rt td{border:1px solid var(--line-strong);padding:6px 9px;text-align:left;vertical-align:top}
+.report table.rt th{background:var(--sunken);font-weight:600;width:22%;white-space:nowrap}
+.report table.rt td.r{text-align:right;font-family:var(--mono)}
+.report .amount{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap;margin:8px 0 4px}
+.report .amount .big{font-size:30px;font-weight:700;font-family:var(--serif)}
+.report .amount .won{font-family:var(--mono);color:var(--ink-2)}
+.report .amount .unit{font-family:var(--sans);font-size:13px;color:var(--ink-2)}
+.report .stamp{position:absolute;top:34px;right:40px;border:2px solid var(--seal);color:var(--seal);font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.2em;padding:4px 10px;transform:rotate(-8deg);opacity:.85}
+.report .stamp.hidden{display:none}
+.report .sign{margin-top:28px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;font-family:var(--sans);font-size:13px}
+.report .sign .box{border:1px solid var(--line-strong);width:120px;height:56px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:11px}
+.report .fine{font-family:var(--sans);font-size:11px;color:var(--ink-3);line-height:1.6;margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+.report ul{margin:4px 0 0;padding-left:18px;font-family:var(--sans);font-size:13px}
+.rtools{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal .box{background:var(--surface);border-radius:10px;max-width:640px;width:100%;max-height:80vh;overflow:auto;padding:20px;box-shadow:var(--shadow)}
+.modal .box h3{margin-bottom:12px}
+.caselist{display:flex;flex-direction:column;gap:6px}
+.caselist .row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius)}
+.caselist .row .t{flex:1;min-width:0}
+.caselist .row .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.caselist .row .t span{font-size:12px;color:var(--ink-3)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .body{grid-template-columns:1fr}
+  .nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);height:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px 12px;display:flex;gap:4px;overflow-x:auto;z-index:10}
+  .nav .lbl,.nav .navfoot{display:none}
+  .nav button{width:auto;white-space:nowrap;padding:7px 10px}
+  .main{padding:18px 16px 140px}
+  .report{padding:22px 18px}
+  .report .stamp{top:14px;right:14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.nav,.concl,.rtools,.toast,.modal{display:none!important}
+  .body{display:block}
+  .main{padding:0;max-width:none}
+  section.panel{display:none!important}
+  section.panel#sec-report{display:block!important}
+  .report{border:0;box-shadow:none;max-width:none;padding:0;color:#000}
+  .report .stamp{color:#B3261E;border-color:#B3261E}
+}
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="name">DH의 탁상감정</span><span class="sub">Desk Valuation</span></div>
+    <div class="casebox">
+      <span class="small muted">건명</span>
+      <input id="meta.name" data-k="meta.name" placeholder="예: 마포 ○○아파트 101동 1203호 담보">
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-new">새 건</button>
+      <button class="btn" id="btn-open">불러오기</button>
+      <button class="btn primary" id="btn-save">저장</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="nav" aria-label="작업 단계">
+      <div class="lbl">작업 단계</div>
+      <button data-sec="prop" class="active"><span class="step">1</span>물건개요</button>
+      <button data-sec="check"><span class="step">2</span>자료조사</button>
+      <button data-sec="value"><span class="step">3</span>가격산정</button>
+      <button data-sec="coll"><span class="step">4</span>담보검토</button>
+      <button data-sec="report"><span class="step">5</span>검토서</button>
+      <div class="navfoot">탁상감정은 현장조사 없이 공부(公簿)와 시세자료로 하는 약식 검토입니다. 이 도구는 계산과 정리를 돕고, 판단과 책임은 감정평가사에게 있습니다.</div>
+    </nav>
+
+    <main class="main">
+
+      <!-- ================= 1. 물건개요 ================= -->
+      <section class="panel active" id="sec-prop">
+        <div class="ph">
+          <div><h2>물건개요</h2><p>의뢰 정보와 대상 물건의 기본 사항을 정리합니다. 물건 종류를 고르면 적합한 평가방법과 가중치가 자동으로 제안됩니다.</p></div>
+          <span class="pill ghost" id="samplePill">예시 데이터 입력됨</span>
+        </div>
+
+        <div class="card">
+          <h3>의뢰 정보</h3>
+          <div class="grid">
+            <div class="field"><label>의뢰인 (금융기관·담당자)</label><input data-k="meta.client"></div>
+            <div class="field"><label>의뢰일</label><input type="date" data-k="meta.reqDate"></div>
+            <div class="field"><label><b>기준시점</b></label><input type="date" data-k="meta.baseDate"></div>
+            <div class="field"><label>평가목적</label>
+              <select data-k="meta.purpose">
+                <option value="담보">담보 (대출 심사)</option>
+                <option value="매매참고">매매·시세 참고</option>
+                <option value="경매">경매·공매 검토</option>
+                <option value="내부검토">내부 검토</option>
+                <option value="기타">기타</option>
+              </select></div>
+            <div class="field"><label>담당 감정평가사</label><input data-k="meta.appraiser"></div>
+            <div class="field"><label>소속</label><input data-k="meta.firm"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>대상 물건</h3>
+          <div class="grid">
+            <div class="field"><label><b>물건 종류</b></label>
+              <select data-k="prop.type" id="prop.type">
+                <option value="apt">아파트</option>
+                <option value="officetel">오피스텔</option>
+                <option value="villa">연립·다세대</option>
+                <option value="house">단독·다가구</option>
+                <option value="shop">상가·근린생활시설</option>
+                <option value="office">업무시설·지식산업센터</option>
+                <option value="land">토지</option>
+                <option value="etc">기타</option>
+              </select></div>
+            <div class="field span2"><label><b>소재지</b> (지번 또는 도로명)</label><input data-k="prop.addr"></div>
+            <div class="field"><label>동·호 / 건물명</label><input data-k="prop.dongho"></div>
+            <div class="field"><label>전용면적 (㎡)</label><input class="num" data-k="prop.areaEx"><div class="aux" data-out="py.areaEx"></div></div>
+            <div class="field"><label>공급면적 (㎡)</label><input class="num" data-k="prop.areaSup"><div class="aux" data-out="py.areaSup"></div></div>
+            <div class="field"><label>대지권·토지면적 (㎡)</label><input class="num" data-k="prop.landArea"><div class="aux" data-out="py.landArea"></div></div>
+            <div class="field"><label>건물 연면적 (㎡)</label><input class="num" data-k="prop.bldgArea"><div class="aux" data-out="py.bldgArea"></div></div>
+            <div class="field"><label>해당층 / 총층</label><div class="inline"><input class="num" data-k="prop.floor" style="width:70px"><span>/</span><input class="num" data-k="prop.floors" style="width:70px"></div></div>
+            <div class="field"><label>사용승인(준공) 연도</label><input class="num" data-k="prop.builtYear"><div class="aux" data-out="prop.age"></div></div>
+            <div class="field"><label>구조</label>
+              <select data-k="prop.structure">
+                <option value="rc">철근콘크리트조</option>
+                <option value="src">철골철근콘크리트조</option>
+                <option value="steel">철골조</option>
+                <option value="brick">벽돌·조적조</option>
+                <option value="block">블록조</option>
+                <option value="lsteel">경량철골조</option>
+                <option value="wood">목조</option>
+              </select></div>
+            <div class="field"><label>용도지역</label><input data-k="prop.zone" placeholder="예: 제3종일반주거지역"></div>
+            <div class="field"><label>소유자</label><input data-k="prop.owner"></div>
+            <div class="field span3"><label>특이사항 (향·조망·리모델링·도로조건 등)</label><textarea data-k="prop.note"></textarea></div>
+          </div>
+          <div class="note" style="margin-top:12px" id="typeAdvice"></div>
+        </div>
+
+        <div class="card">
+          <h3>빠른 환산 <span class="hint">평↔㎡, 금액 읽기</span></h3>
+          <div class="grid">
+            <div class="field"><label>㎡ → 평</label><input class="num" id="cv.m2"><div class="aux" id="cv.m2out"></div></div>
+            <div class="field"><label>평 → ㎡</label><input class="num" id="cv.py"><div class="aux" id="cv.pyout"></div></div>
+            <div class="field span2"><label>금액 (원) → 한글 읽기</label><input class="money" id="cv.won"><div class="aux" id="cv.wonout"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. 자료조사 ================= -->
+      <section class="panel" id="sec-check">
+        <div class="ph">
+          <div><h2>자료조사</h2><p>공부 열람과 시세 조사 항목입니다. 각 항목의 조회 사이트로 바로 이동하고, 확인한 내용은 메모에 남기면 검토서에 그대로 옮겨집니다.</p></div>
+          <div class="inline" style="min-width:220px"><div class="progress"><i id="chkBar"></i></div><span class="num small" id="chkCnt"></span></div>
+        </div>
+        <div class="card" id="checklist"></div>
+
+        <div class="card">
+          <h3>권리관계 <span class="hint">등기부 을구·임대차 현황. 담보검토에서 자동 차감됩니다.</span></h3>
+          <div class="twrap"><table class="t">
+            <thead><tr><th>순위</th><th>권리자·내용</th><th class="r">채권최고액 / 보증금 (원)</th><th>비고</th></tr></thead>
+            <tbody id="lienRows"></tbody>
+            <tr class="total"><td colspan="2">선순위 합계</td><td class="out" data-out="lienTotal"></td><td></td></tr>
+          </table></div>
+        </div>
+
+        <div class="card">
+          <h3>참고 시세 <span class="hint">조사한 값을 그대로 기록합니다. 시산가액과 비교해 검토서에 병기됩니다.</span></h3>
+          <div class="grid">
+            <div class="field"><label>KB시세 일반평균가 (원)</label><input class="money" data-k="ref.kb"></div>
+            <div class="field"><label>KB시세 하한 (원)</label><input class="money" data-k="ref.kbLow"></div>
+            <div class="field"><label>KB시세 상한 (원)</label><input class="money" data-k="ref.kbHigh"></div>
+            <div class="field"><label>부동산원 시세 (원)</label><input class="money" data-k="ref.reb"></div>
+            <div class="field"><label>최근 실거래가 (원)</label><input class="money" data-k="ref.trade"></div>
+            <div class="field"><label>실거래일</label><input type="date" data-k="ref.tradeDate"></div>
+            <div class="field"><label>공시가격 · 개별공시지가×면적 (원)</label><input class="money" data-k="ref.official"></div>
+            <div class="field"><label>호가·매물 (원)</label><input class="money" data-k="ref.ask"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. 가격산정 ================= -->
+      <section class="panel" id="sec-value">
+        <div class="ph">
+          <div><h2>가격산정</h2><p>방법별 시산가액을 계산하고, 마지막 탭에서 가중치를 조정해 감정평가액을 결정합니다. 모든 보정치는 100을 기준으로 한 백분율입니다.</p></div>
+        </div>
+
+        <div class="tabs" id="mtabs">
+          <button data-m="sc" class="active">거래사례비교법 <span class="pill blue" data-out="tab.sc"></span></button>
+          <button data-m="land">공시지가기준법 <span class="pill blue" data-out="tab.land"></span></button>
+          <button data-m="cost">원가법(건물) <span class="pill blue" data-out="tab.cost"></span></button>
+          <button data-m="inc">수익환원법 <span class="pill blue" data-out="tab.inc"></span></button>
+          <button data-m="recon">시산가액 조정 <span class="pill seal" data-out="tab.recon"></span></button>
+        </div>
+
+        <!-- 거래사례비교법 -->
+        <div class="mtab active" id="m-sc">
+          <div class="card">
+            <h3>비교 사례 <span class="hint">같은 단지·인근 유사 물건의 실거래. 비준단가 = 사례단가 × 사정보정 × 시점수정 × 지역요인 × 개별요인 ÷ 100⁴</span></h3>
+            <div class="twrap"><table class="t">
+              <thead><tr>
+                <th>사례</th><th>거래일</th><th class="r">거래가격 (원)</th><th class="r">면적 (㎡)</th><th class="r">사례단가</th>
+                <th class="r">사정</th><th class="r">시점</th><th class="r">지역</th><th class="r">개별</th><th class="r">비준단가 (원/㎡)</th><th class="r">가중치</th>
+              </tr></thead>
+              <tbody id="scRows"></tbody>
+              <tr class="total"><td colspan="9">가중평균 비준단가</td><td class="out" data-out="sc.unit"></td><td class="out" data-out="sc.wsum"></td></tr>
+            </table></div>
+            <div class="grid" style="margin-top:12px">
+              <div class="field"><label>대상 면적 기준</label>
+                <select data-k="sc.basis"><option value="areaEx">전용면적</option><option value="areaSup">공급면적</option><option value="landArea">토지면적</option><option value="bldgArea">건물 연면적</option></select>
+                <div class="aux" data-out="sc.areaShow"></div></div>
+            </div>
+            <div class="result">
+              <div class="tile"><div class="k">가중평균 비준단가</div><div class="v" data-out="sc.unitF"></div></div>
+              <div class="tile"><div class="k">평당</div><div class="v" data-out="sc.unitPy"></div></div>
+              <div class="tile hero"><div class="k">비준가액</div><div class="v" data-out="sc.value"></div></div>
+            </div>
+            <div class="formula" data-out="sc.formula"></div>
+          </div>
+          <div class="card">
+            <h3>시점수정 도우미 <span class="hint">가격지수로 계산 (한국부동산원 R-ONE·KB 지수)</span></h3>
+            <div class="grid">
+              <div class="field"><label>사례시점 지수</label><input class="num" id="ti.a"></div>
+              <div class="field"><label>기준시점 지수</label><input class="num" id="ti.b"></div>
+              <div class="field"><label>시점수정치</label><div class="aux" id="ti.out" style="font-size:16px;color:var(--ink)">—</div></div>
+            </div>
+            <div class="inline" style="margin-top:8px">
+              <button class="btn sm" data-ti="0">사례1에 적용</button><button class="btn sm" data-ti="1">사례2에 적용</button><button class="btn sm" data-ti="2">사례3에 적용</button>
+            </div>
+          </div>
+          <div class="note">개별요인은 층·향·조망·내부상태·주차·엘리베이터 유무 등을 종합한 하나의 수치입니다. 예를 들어 사례보다 대상이 3% 열세이면 97, 5% 우세이면 105를 입력합니다. 사정보정은 급매·특수관계 거래 등 정상 거래가 아닌 경우에만 100 이외 값을 씁니다.</div>
+        </div>
+
+        <!-- 공시지가기준법 -->
+        <div class="mtab" id="m-land">
+          <div class="card">
+            <h3>표준지 공시지가 기준 <span class="hint">토지단가 = 표준지 공시지가 × 시점수정 × 지역요인 × 개별요인 × 그 밖의 요인</span></h3>
+            <div class="grid">
+              <div class="field span2"><label>비교 표준지 (소재지·지목·용도지역·이용상황)</label><input data-k="land.std"></div>
+              <div class="field"><label>표준지 공시지가 (원/㎡)</label><input class="money" data-k="land.stdPrice"></div>
+              <div class="field"><label>공시기준일</label><input type="date" data-k="land.stdDate"></div>
+              <div class="field"><label>시점수정치 (%)</label><input class="pct" data-k="land.time"><div class="aux">지가변동률 누적</div></div>
+              <div class="field"><label>지역요인 (%)</label><input class="pct" data-k="land.region"></div>
+              <div class="field"><label>그 밖의 요인 보정치 (%)</label><input class="pct" data-k="land.other"><div class="aux">거래사례·평가선례 격차율</div></div>
+              <div class="field"><label>대상 토지면적 (㎡)</label><input class="num" data-k="land.area"><div class="aux" data-out="land.areaPy"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>개별요인 비교 <span class="hint">각 조건을 100 기준으로 입력. 곱하여 개별요인 비교치를 만듭니다.</span></h3>
+            <div class="grid">
+              <div class="field"><label>가로조건</label><input class="pct" data-k="land.f1"><div class="aux">도로 폭·포장·계통</div></div>
+              <div class="field"><label>접근조건</label><input class="pct" data-k="land.f2"><div class="aux">교통·상업중심 접근성</div></div>
+              <div class="field"><label>환경조건</label><input class="pct" data-k="land.f3"><div class="aux">일조·소음·혐오시설</div></div>
+              <div class="field"><label>획지조건</label><input class="pct" data-k="land.f4"><div class="aux">면적·형상·고저·방위</div></div>
+              <div class="field"><label>행정적조건</label><input class="pct" data-k="land.f5"><div class="aux">용도지역·건폐율·용적률</div></div>
+              <div class="field"><label>기타조건</label><input class="pct" data-k="land.f6"><div class="aux">장래 동향 등</div></div>
+            </div>
+            <div class="result">
+              <div class="tile"><div class="k">개별요인 비교치</div><div class="v" data-out="land.indiv"></div></div>
+              <div class="tile"><div class="k">토지단가 (원/㎡)</div><div class="v" data-out="land.unit"></div></div>
+              <div class="tile"><div class="k">평당</div><div class="v" data-out="land.unitPy"></div></div>
+              <div class="tile hero"><div class="k">토지가액</div><div class="v" data-out="land.value"></div></div>
+            </div>
+            <div class="formula" data-out="land.formula"></div>
+          </div>
+          <div class="card">
+            <h3>지가변동률 누적 계산 <span class="hint">공시기준일 이후 월별 변동률(%)을 쉼표로 입력</span></h3>
+            <div class="grid c2">
+              <div class="field span2"><label>월별 지가변동률 (%)</label><input id="lr.in" placeholder="예: 0.12, 0.15, 0.09, -0.03"></div>
+              <div class="field"><label>누적 시점수정치</label><div class="aux" id="lr.out" style="font-size:16px;color:var(--ink)">—</div></div>
+              <div class="field"><label>&nbsp;</label><button class="btn sm" id="lr.apply">시점수정치에 적용</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 원가법 -->
+        <div class="mtab" id="m-cost">
+          <div class="card">
+            <h3>건물 적산가액 <span class="hint">재조달원가 × 연면적 × 잔가율 (정액법). 단독·다가구·상가 건물의 건물분 산정</span></h3>
+            <div class="grid">
+              <div class="field"><label>구조</label>
+                <select data-k="cost.structure" id="cost.structure">
+                  <option value="rc">철근콘크리트조</option><option value="src">철골철근콘크리트조</option><option value="steel">철골조</option>
+                  <option value="brick">벽돌·조적조</option><option value="block">블록조</option><option value="lsteel">경량철골조</option><option value="wood">목조</option>
+                </select><div class="aux">구조 변경 시 아래 단가·내용연수 기본값이 채워집니다</div></div>
+              <div class="field"><label>재조달원가 (원/㎡)</label><input class="money" data-k="cost.unitCost"><div class="aux">건물신축단가표·용도별 실무단가로 수정</div></div>
+              <div class="field"><label>연면적 (㎡)</label><input class="num" data-k="cost.area"><div class="aux" data-out="cost.areaPy"></div></div>
+              <div class="field"><label>내용연수 (년)</label><input class="num" data-k="cost.life"></div>
+              <div class="field"><label>준공연도</label><input class="num" data-k="cost.builtYear"><div class="aux" data-out="cost.ageShow"></div></div>
+              <div class="field"><label>최종 잔존가치율 (%)</label><input class="pct" data-k="cost.residual"><div class="aux">보통 0~10</div></div>
+              <div class="field"><label>관찰감가 추가 (%)</label><input class="pct" data-k="cost.obs"><div class="aux">노후·관리상태 감안, 없으면 0</div></div>
+            </div>
+            <div class="result">
+              <div class="tile"><div class="k">재조달원가 총액</div><div class="v" data-out="cost.rcn"></div></div>
+              <div class="tile"><div class="k">잔가율</div><div class="v" data-out="cost.rate"></div></div>
+              <div class="tile hero"><div class="k">건물가액</div><div class="v" data-out="cost.value"></div></div>
+              <div class="tile"><div class="k">토지+건물 (적산가액)</div><div class="v" data-out="cost.sum"></div></div>
+            </div>
+            <div class="formula" data-out="cost.formula"></div>
+          </div>
+          <div class="note">잔가율 = (내용연수 − 경과연수) ÷ 내용연수, 최종 잔존가치율을 하한으로 합니다. 토지+건물 적산가액은 공시지가기준법 탭의 토지가액과 여기의 건물가액을 합한 값입니다.</div>
+        </div>
+
+        <!-- 수익환원법 -->
+        <div class="mtab" id="m-inc">
+          <div class="card">
+            <h3>직접환원법 <span class="hint">수익가액 = 순수익 ÷ 환원율. 상가·업무시설·다가구(임대) 검토</span></h3>
+            <div class="grid">
+              <div class="field"><label>월 임대료 합계 (원)</label><input class="money" data-k="inc.rent"></div>
+              <div class="field"><label>보증금 합계 (원)</label><input class="money" data-k="inc.deposit"></div>
+              <div class="field"><label>보증금 운용이율 (%)</label><input class="pct" data-k="inc.depRate"></div>
+              <div class="field"><label>기타 수입 연간 (원)</label><input class="money" data-k="inc.other"><div class="aux">관리비 수익·주차 등</div></div>
+              <div class="field"><label>공실·대손률 (%)</label><input class="pct" data-k="inc.vacancy"></div>
+              <div class="field"><label>운영경비율 (%)</label><input class="pct" data-k="inc.opex"><div class="aux">유효총수익 대비. 세금·보험·수선·관리</div></div>
+              <div class="field"><label>환원율 (%)</label><input class="pct" data-k="inc.cap"><div class="aux">지역·용도별 시장 환원율</div></div>
+            </div>
+            <div class="result">
+              <div class="tile"><div class="k">가능총수익 (연)</div><div class="v" data-out="inc.pgi"></div></div>
+              <div class="tile"><div class="k">유효총수익</div><div class="v" data-out="inc.egi"></div></div>
+              <div class="tile"><div class="k">순수익 (NOI)</div><div class="v" data-out="inc.noi"></div></div>
+              <div class="tile hero"><div class="k">수익가액</div><div class="v" data-out="inc.value"></div></div>
+            </div>
+            <div class="formula" data-out="inc.formula"></div>
+          </div>
+        </div>
+
+        <!-- 시산가액 조정 -->
+        <div class="mtab" id="m-recon">
+          <div class="card">
+            <h3>시산가액 조정 <span class="hint">가중치는 합이 100이 아니어도 됩니다. 값이 0인 방법은 제외됩니다.</span></h3>
+            <div class="twrap"><table class="t">
+              <thead><tr><th>방식</th><th>시산가액</th><th class="r">금액 (원)</th><th class="r">㎡당</th><th class="r" style="width:110px">가중치 (%)</th></tr></thead>
+              <tbody>
+                <tr><td>비교방식</td><td>비준가액 (거래사례비교법)</td><td class="out" data-out="rc.sc"></td><td class="out" data-out="rc.scU"></td><td><input class="pct" data-k="recon.wSc"></td></tr>
+                <tr><td>원가방식</td><td>적산가액 (토지 공시지가기준 + 건물 원가법)</td><td class="out" data-out="rc.cost"></td><td class="out" data-out="rc.costU"></td><td><input class="pct" data-k="recon.wCost"></td></tr>
+                <tr><td>수익방식</td><td>수익가액 (직접환원법)</td><td class="out" data-out="rc.inc"></td><td class="out" data-out="rc.incU"></td><td><input class="pct" data-k="recon.wInc"></td></tr>
+                <tr class="total"><td colspan="2">가중평균 시산가액</td><td class="out" data-out="rc.avg"></td><td class="out" data-out="rc.avgU"></td><td class="out" data-out="rc.wsum"></td></tr>
+              </tbody>
+            </table></div>
+            <div class="inline" style="margin-top:10px"><button class="btn sm" id="btn-recWeights">물건 종류 기본 가중치 적용</button><span class="small muted" id="recHint"></span></div>
+          </div>
+          <div class="card">
+            <h3>감정평가액 결정</h3>
+            <div class="grid">
+              <div class="field"><label>반올림 단위</label>
+                <select data-k="recon.round"><option value="10000">만원</option><option value="100000">십만원</option><option value="1000000">백만원</option><option value="10000000">천만원</option></select></div>
+              <div class="field span2"><label>결정가액 직접 입력 (원) <span class="muted">비우면 가중평균 사용</span></label><input class="money" data-k="recon.final"></div>
+              <div class="field span3"><label>결정 근거·의견</label><textarea data-k="recon.opinion" placeholder="예: 동일단지 최근 3건 실거래 및 KB시세를 주된 근거로 하되, 저층·향 열세를 감안하여 하향 조정"></textarea></div>
+            </div>
+            <div class="result">
+              <div class="tile hero"><div class="k">감정평가액 (결정)</div><div class="v" data-out="fin.value"></div></div>
+              <div class="tile"><div class="k">㎡당</div><div class="v" data-out="fin.unit"></div></div>
+              <div class="tile"><div class="k">평당</div><div class="v" data-out="fin.unitPy"></div></div>
+              <div class="tile"><div class="k">한글 표기</div><div class="v" style="font-family:var(--sans);font-size:14px" data-out="fin.kor"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>참고 시세 대비 <span class="hint">결정가액이 시세 범위를 벗어나면 경고합니다.</span></h3>
+            <div class="twrap"><table class="t">
+              <thead><tr><th>구분</th><th class="r">금액 (원)</th><th class="r">결정가액 ÷ 참고가</th><th>판단</th></tr></thead>
+              <tbody id="refRows"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. 담보검토 ================= -->
+      <section class="panel" id="sec-coll">
+        <div class="ph">
+          <div><h2>담보검토</h2><p>감정평가액에서 담보인정비율을 적용하고 소액임차인 최우선변제금(방공제)과 선순위 채권을 차감해 대출가능금액을 산출합니다.</p></div>
+        </div>
+        <div class="card">
+          <h3>담보 조건</h3>
+          <div class="grid">
+            <div class="field"><label>담보인정비율 LTV (%)</label><input class="pct" data-k="coll.ltv"></div>
+            <div class="field"><label>임대차 구분</label><select data-k="coll.kind"><option value="home">주택 (주택임대차보호법)</option><option value="shop">상가 (상가건물임대차보호법)</option></select></div>
+            <div class="field"><label>소재 지역 구분</label><select data-k="coll.region" id="coll.region"></select></div>
+            <div class="field"><label>최우선변제금 1건당 (원)</label><input class="money" data-k="coll.perRoom"><div class="aux" id="collBasis"></div></div>
+            <div class="field"><label>공제 건수 (방 수)</label><input class="num" data-k="coll.rooms"><div class="aux">아파트·오피스텔은 보통 1, 다가구는 임대 가능 방 수</div></div>
+            <div class="field"><label>실제 임차보증금 합계 (원)</label><input class="money" data-k="coll.deposit"><div class="aux">방공제와 비교해 큰 금액 차감</div></div>
+            <div class="field"><label>기타 차감 (원)</label><input class="money" data-k="coll.etc"><div class="aux">가압류·체납·기타</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>대출가능금액 산출</h3>
+          <div class="twrap"><table class="t">
+            <tbody>
+              <tr><td>감정평가액 (결정)</td><td class="out" data-out="cl.value"></td></tr>
+              <tr><td>× 담보인정비율</td><td class="out" data-out="cl.ltv"></td></tr>
+              <tr><td>= 담보인정금액</td><td class="out" data-out="cl.ltvAmt"></td></tr>
+              <tr><td>− 최우선변제금 공제 (방공제) <span class="muted small" data-out="cl.roomNote"></span></td><td class="out" data-out="cl.room"></td></tr>
+              <tr><td>− 선순위 채권최고액 합계 (자료조사 권리관계)</td><td class="out" data-out="cl.lien"></td></tr>
+              <tr><td>− 기타 차감</td><td class="out" data-out="cl.etc"></td></tr>
+              <tr class="total"><td>= 대출가능금액 (유효담보가액)</td><td class="out" data-out="cl.avail"></td></tr>
+            </tbody>
+          </table></div>
+          <div class="result">
+            <div class="tile hero"><div class="k">대출가능금액</div><div class="v" data-out="cl.availF"></div></div>
+            <div class="tile"><div class="k">감정가 대비</div><div class="v" data-out="cl.availPct"></div></div>
+            <div class="tile"><div class="k">선순위 포함 총 LTV</div><div class="v" data-out="cl.totalLtv"></div></div>
+          </div>
+          <div id="collWarn" class="note warn" style="margin-top:12px" hidden></div>
+        </div>
+        <div class="card">
+          <h3>최우선변제금 기준표 <span class="hint">주택 2023.2.21 시행, 상가 2014.1.1 시행 기준. 개정 시 위 1건당 금액을 직접 수정하세요.</span></h3>
+          <div class="twrap"><table class="t" id="rulesTable"></table></div>
+        </div>
+      </section>
+
+      <!-- ================= 5. 검토서 ================= -->
+      <section class="panel" id="sec-report">
+        <div class="rtools">
+          <button class="btn primary" id="btn-print">인쇄 · PDF</button>
+          <button class="btn" id="btn-copy">텍스트 복사</button>
+          <button class="btn" id="btn-dl-html">HTML 저장</button>
+          <button class="btn" id="btn-dl-csv">CSV 저장</button>
+        </div>
+        <div class="report" id="report">
+          <div class="stamp" id="stamp">예시 · SAMPLE</div>
+          <div class="rh">
+            <div><h2>탁상감정 검토서</h2><div class="en">Desk Valuation Memo</div></div>
+            <div class="meta"><div data-out="rp.no"></div><div>기준시점 <span data-out="rp.baseDate"></span></div><div>작성일 <span data-out="rp.today"></span></div></div>
+          </div>
+
+          <h4>대상 물건</h4>
+          <table class="rt">
+            <tr><th>소재지</th><td colspan="3" data-out="rp.addr"></td></tr>
+            <tr><th>물건 종류</th><td data-out="rp.type"></td><th>용도지역</th><td data-out="rp.zone"></td></tr>
+            <tr><th>면적</th><td data-out="rp.area"></td><th>층 / 준공</th><td data-out="rp.floorBuilt"></td></tr>
+            <tr><th>의뢰인</th><td data-out="rp.client"></td><th>평가목적</th><td data-out="rp.purpose"></td></tr>
+          </table>
+
+          <h4>감정평가액 (탁상)</h4>
+          <div class="amount"><span class="big" data-out="rp.kor"></span><span class="won" data-out="rp.value"></span><span class="unit" data-out="rp.unit"></span></div>
+
+          <h4>시산가액 및 조정</h4>
+          <table class="rt"><tr><th>방식</th><th>시산가액</th><th style="width:16%">㎡당</th><th style="width:12%">가중치</th></tr><tbody id="rpMethods"></tbody></table>
+          <p style="font-family:var(--sans);font-size:13px;margin:8px 0 0" data-out="rp.opinion"></p>
+
+          <h4>참고 시세 비교</h4>
+          <table class="rt"><tr><th>구분</th><th>금액</th><th style="width:20%">결정가액 대비</th></tr><tbody id="rpRefs"></tbody></table>
+
+          <div id="rpCollWrap">
+            <h4>담보 검토</h4>
+            <table class="rt"><tbody id="rpColl"></tbody></table>
+          </div>
+
+          <h4>자료조사 · 권리관계</h4>
+          <ul id="rpChecks"></ul>
+
+          <div class="sign">
+            <div><div>담당 감정평가사 <b data-out="rp.appraiser"></b></div><div class="muted small" data-out="rp.firm"></div></div>
+            <div class="box">(인)</div>
+          </div>
+          <div class="fine">본 검토서는 현장조사 없이 공부·시세자료에 근거한 탁상감정(약식 검토) 결과로서 「감정평가 및 감정평가사에 관한 법률」에 따른 감정평가서가 아니며, 정식 감정평가 시 현장조사·권리분석 결과에 따라 평가액이 달라질 수 있습니다. 대출 실행 등 의사결정 시 정식 감정평가를 권고합니다.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="concl">
+    <div><div class="k">감정평가액 (결정)</div><div class="v big" data-out="bar.value"></div></div>
+    <div><div class="k">㎡당 / 평당</div><div class="v" data-out="bar.unit"></div></div>
+    <div><div class="k">대출가능금액</div><div class="v" data-out="bar.avail"></div></div>
+    <div class="sp"></div>
+    <div class="state" id="saveState">저장 위치 확인 중…</div>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="box">
+    <div class="inline" style="justify-content:space-between"><h3>저장된 건</h3><button class="btn sm" id="modal-close">닫기</button></div>
+    <div class="caselist" id="caseList"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================= 상수 ======================= */
+const PY = 3.305785;
+const TYPES = {apt:'아파트',officetel:'오피스텔',villa:'연립·다세대',house:'단독·다가구',shop:'상가·근린생활시설',office:'업무시설·지식산업센터',land:'토지',etc:'기타'};
+const STRUCT = {
+  rc:{n:'철근콘크리트조',life:50,cost:2200000}, src:{n:'철골철근콘크리트조',life:55,cost:2500000}, steel:{n:'철골조',life:40,cost:1600000},
+  brick:{n:'벽돌·조적조',life:40,cost:1300000}, block:{n:'블록조',life:35,cost:1000000}, lsteel:{n:'경량철골조',life:30,cost:900000}, wood:{n:'목조',life:35,cost:1200000}
+};
+const ADVICE = {
+  apt:{w:[100,0,0],t:'아파트는 동일단지 실거래·KB시세 기반 <b>거래사례비교법</b>이 주된 방법입니다. 층·향·타입 개별요인만 보정하면 됩니다.'},
+  officetel:{w:[80,0,20],t:'오피스텔은 <b>거래사례비교법</b>을 주로 하되, 임대 수익이 명확하면 <b>수익환원법</b>을 보조로 씁니다.'},
+  villa:{w:[100,0,0],t:'연립·다세대는 인근 유사 물건 <b>거래사례비교법</b>이 원칙이며, 사례가 부족하면 토지 공시지가기준법 + 건물 원가법으로 검증합니다.'},
+  house:{w:[30,70,0],t:'단독·다가구는 <b>토지(공시지가기준법) + 건물(원가법)</b> 적산가액이 주된 방법이고 거래사례로 검증합니다. 다가구는 방 수만큼 방공제가 커집니다.'},
+  shop:{w:[50,0,50],t:'상가는 <b>거래사례비교법</b>과 <b>수익환원법</b>을 병행합니다. 층별 효용비, 환산보증금 기준 최우선변제금(상가)을 확인하세요.'},
+  office:{w:[60,0,40],t:'업무시설·지식산업센터는 호실 실거래 <b>거래사례비교법</b>과 임대료 기반 <b>수익환원법</b>을 병행합니다.'},
+  land:{w:[30,70,0],t:'토지는 <b>공시지가기준법</b>이 주된 방법입니다. 표준지 선정, 지가변동률 시점수정, 개별요인 6항목을 채우고 거래사례로 그 밖의 요인을 보정합니다.'},
+  etc:{w:[50,50,0],t:'물건 특성에 맞게 방법과 가중치를 직접 정하세요.'}
+};
+const RULES = {
+  home:{basis:'주택임대차보호법 시행령 (2023.2.21 시행)', rows:[
+    ['seoul','서울특별시','1억 6,500만원 이하',55000000],
+    ['metro','과밀억제권역(서울 제외)·세종·용인·화성·김포','1억 4,500만원 이하',48000000],
+    ['city','광역시(과밀억제권역·군 제외)·안산·광주·파주·이천·평택','8,500만원 이하',28000000],
+    ['other','그 밖의 지역','7,500만원 이하',25000000]]},
+  shop:{basis:'상가건물임대차보호법 시행령 (2014.1.1 시행)', rows:[
+    ['seoul','서울특별시','환산보증금 6,500만원 이하',22000000],
+    ['metro','과밀억제권역(서울 제외)','환산보증금 5,500만원 이하',19000000],
+    ['city','광역시(과밀억제권역·군 제외)·안산·용인·김포·광주','환산보증금 3,800만원 이하',13000000],
+    ['other','그 밖의 지역','환산보증금 3,000만원 이하',10000000]]}
+};
+const CHECKS = [
+  {k:'reg',t:'등기사항전부증명서 (토지·건물·집합건물)',w:'갑구: 소유자 일치, 가압류·가처분·경매개시·압류 유무. 을구: 근저당 채권최고액·순위, 전세권·임차권·지상권. 권리는 아래 권리관계 표에 옮깁니다.',l:[['인터넷등기소','http://www.iros.go.kr']]},
+  {k:'bld',t:'건축물대장 (표제부·전유부)',w:'위반건축물 표기, 주용도·면적이 등기와 일치하는지, 사용승인일, 구조, 주차대수. 무단 증축·용도변경은 담보 제외 사유가 됩니다.',l:[['정부24','https://www.gov.kr'],['세움터','https://cloud.eais.go.kr']]},
+  {k:'land',t:'토지대장·지적도',w:'지목, 면적, 지분(대지권 비율). 집합건물은 대지권 등기 여부.',l:[['정부24','https://www.gov.kr']]},
+  {k:'zone',t:'토지이용계획확인원',w:'용도지역·지구·구역, 개발제한구역·도로 저촉·도시계획시설 여부. 토지·단독 평가에서 개별요인과 행정적 조건의 근거.',l:[['토지이음','https://www.eum.go.kr']]},
+  {k:'price',t:'공시가격·개별공시지가·표준지공시지가',w:'공동주택 공시가격 또는 개별공시지가와 인근 표준지 공시지가. 결정가액과 비율을 비교해 이상치를 걸러냅니다.',l:[['부동산공시가격알리미','https://www.realtyprice.kr']]},
+  {k:'trade',t:'실거래가 조회',w:'같은 단지·동일 면적 최근 1년 실거래. 최근 3건을 사례로 채택하고 취소 거래·직거래는 제외.',l:[['국토부 실거래가','https://rt.molit.go.kr'],['법원경매정보(낙찰사례)','https://www.courtauction.go.kr']]},
+  {k:'kb',t:'시세 (KB·한국부동산원)',w:'KB시세 상·하한·일반가와 부동산원 시세. 금융권 담보는 KB시세 일반가 기준 관행을 확인.',l:[['KB부동산','https://kbland.kr'],['부동산원 R-ONE','https://www.reb.or.kr/r-one'],['디스코','https://www.disco.re'],['밸류맵','https://www.valueupmap.com']]},
+  {k:'map',t:'위치·형상 확인 (지도·로드뷰·항공사진)',w:'접면도로, 맹지 여부, 경사, 인접 혐오시설, 건물 외관 상태. 현장조사를 대신하는 최소 확인.',l:[['카카오맵','https://map.kakao.com'],['네이버지도','https://map.naver.com'],['국토정보플랫폼','https://map.ngii.go.kr']]},
+  {k:'tenant',t:'임대차 현황 (전입세대·상가 임차인)',w:'전입세대열람은 소유자 동의 필요. 확인 불가 시 방 수 기준 방공제로 갈음하고 검토서에 명시.',l:[]},
+  {k:'prec',t:'감정평가 선례·인근 평가사례',w:'최근 담보·경매 평가 선례가 있으면 단가 수준을 대조. 그 밖의 요인 보정치의 근거.',l:[['한국감정평가사협회','https://www.kapanet.or.kr']]}
+];
+
+/* ======================= 상태 ======================= */
+const todayStr = () => new Date().toISOString().slice(0,10);
+function blankState(){
+  return {
+    v:1, sample:false,
+    meta:{name:'',client:'',reqDate:todayStr(),baseDate:todayStr(),purpose:'담보',appraiser:'',firm:''},
+    prop:{type:'apt',addr:'',dongho:'',areaEx:'',areaSup:'',landArea:'',bldgArea:'',floor:'',floors:'',builtYear:'',structure:'rc',zone:'',owner:'',note:''},
+    check:{}, liens:[{name:'',amt:'',memo:''},{name:'',amt:'',memo:''},{name:'',amt:'',memo:''}],
+    ref:{kb:'',kbLow:'',kbHigh:'',reb:'',trade:'',tradeDate:'',official:'',ask:''},
+    sc:{basis:'areaEx',cases:[0,1,2].map(()=>({name:'',date:'',price:'',area:'',situ:100,time:100,region:100,indiv:100,w:1}))},
+    land:{std:'',stdPrice:'',stdDate:'',time:100,region:100,other:100,f1:100,f2:100,f3:100,f4:100,f5:100,f6:100,area:''},
+    cost:{structure:'rc',unitCost:2200000,area:'',life:50,builtYear:'',residual:0,obs:0},
+    inc:{rent:'',deposit:'',depRate:3,other:'',vacancy:5,opex:20,cap:5},
+    recon:{wSc:100,wCost:0,wInc:0,round:'100000',final:'',opinion:''},
+    coll:{ltv:70,kind:'home',region:'seoul',perRoom:55000000,rooms:1,deposit:'',etc:''}
+  };
+}
+function sampleState(){
+  const s = blankState(); s.sample = true;
+  s.meta = {name:'마포 해오라기아파트 101동 1203호 (예시)',client:'○○은행 마포지점 (예시)',reqDate:todayStr(),baseDate:todayStr(),purpose:'담보',appraiser:'',firm:''};
+  s.prop = {type:'apt',addr:'서울특별시 마포구 ○○동 000-0 (예시)',dongho:'101동 1203호',areaEx:'84.97',areaSup:'112.3',landArea:'42.15',bldgArea:'',floor:'12',floors:'25',builtYear:'2009',structure:'rc',zone:'제3종일반주거지역',owner:'',note:'남향, 한강 조망 없음, 2021년 내부 수리'};
+  s.check = {reg:{d:true,m:'소유자 일치. 을구 ○○은행 근저당 1건 (채권최고액 3.6억).'},bld:{d:true,m:'위반건축물 표기 없음. 사용승인 2009.11.'},trade:{d:true,m:'동일 평형 최근 3건 실거래 채택.'},kb:{d:true,m:'KB 일반가 14.2억 (하한 13.5 / 상한 14.9).'}};
+  s.liens[0] = {name:'○○은행 근저당 (1순위)',amt:'360000000',memo:'2021.03 설정'};
+  s.ref = {kb:'1420000000',kbLow:'1350000000',kbHigh:'1490000000',reb:'',trade:'1400000000',tradeDate:'2026-07-14',official:'980000000',ask:'1480000000'};
+  s.sc.cases = [
+    {name:'같은 단지 102동 9층',date:'2026-07-14',price:'1400000000',area:'84.97',situ:100,time:101,region:100,indiv:101,w:2},
+    {name:'같은 단지 103동 18층',date:'2026-05-02',price:'1450000000',area:'84.97',situ:100,time:102,region:100,indiv:97,w:1},
+    {name:'인근 ○○아파트 11층',date:'2026-06-20',price:'1330000000',area:'84.93',situ:100,time:101,region:103,indiv:100,w:1}
+  ];
+  s.land = {std:'마포구 ○○동 000 (대·아파트·3종일주)',stdPrice:'12800000',stdDate:'2026-01-01',time:101.2,region:100,other:130,f1:100,f2:100,f3:100,f4:100,f5:100,f6:100,area:'42.15'};
+  s.cost = {structure:'rc',unitCost:2200000,area:'112.3',life:50,builtYear:'2009',residual:0,obs:0};
+  s.inc = {rent:'2500000',deposit:'100000000',depRate:3,other:'',vacancy:5,opex:20,cap:3.5};
+  s.recon = {wSc:100,wCost:0,wInc:0,round:'1000000',final:'',opinion:'동일단지 최근 3건 실거래와 KB시세 일반가를 주된 근거로 하며, 중층·남향으로 개별요인 보정은 미미함.'};
+  s.coll = {ltv:70,kind:'home',region:'seoul',perRoom:55000000,rooms:1,deposit:'',etc:''};
+  return s;
+}
+let S = null;
+
+/* ======================= 유틸 ======================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const num = v => { if (v===null||v===undefined) return 0; const n = parseFloat(String(v).replace(/[^0-9.\-]/g,'')); return isFinite(n)?n:0; };
+const fmt = (n,d=0) => (isFinite(n)?n:0).toLocaleString('ko-KR',{maximumFractionDigits:d,minimumFractionDigits:0});
+const wonS = n => n ? fmt(Math.round(n))+'원' : '—';
+function kor(n){
+  n = Math.round(n||0); if(!n) return '—';
+  const sign = n<0?'-':''; n = Math.abs(n);
+  const eok = Math.floor(n/1e8), man = Math.round((n%1e8)/1e4);
+  let parts=[]; let e=eok, m=man; if(m===10000){e+=1;m=0;}
+  if(e) parts.push(fmt(e)+'억'); if(m) parts.push(fmt(m)+'만');
+  if(!parts.length) return sign+fmt(n)+'원';
+  return sign+parts.join(' ')+'원';
+}
+const py = m2 => m2/PY;
+const roundTo = (n,u) => u? Math.round(n/u)*u : Math.round(n);
+function get(o,p){ return p.split('.').reduce((a,k)=>a==null?undefined:a[k],o); }
+function set(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]={}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
+function out(k,v){ $$('[data-out="'+k+'"]').forEach(el=>{ el.textContent = v==null?'':v; }); }
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ======================= 동적 행 생성 ======================= */
+function buildRows(){
+  $('#lienRows').innerHTML = [0,1,2].map(i=>`<tr>
+    <td class="num">${i+1}</td>
+    <td class="name"><input data-k="liens.${i}.name" placeholder="○○은행 근저당"></td>
+    <td><input class="money" data-k="liens.${i}.amt"></td>
+    <td><input data-k="liens.${i}.memo" placeholder="설정일·비고"></td></tr>`).join('');
+  $('#scRows').innerHTML = [0,1,2].map(i=>`<tr>
+    <td class="name"><input data-k="sc.cases.${i}.name" placeholder="사례 ${i+1}"></td>
+    <td><input type="date" data-k="sc.cases.${i}.date" style="min-width:130px"></td>
+    <td><input class="money" data-k="sc.cases.${i}.price" style="min-width:120px"></td>
+    <td><input class="num" data-k="sc.cases.${i}.area"></td>
+    <td class="out" data-out="sc.c${i}.unit"></td>
+    <td><input class="pct" data-k="sc.cases.${i}.situ"></td>
+    <td><input class="pct" data-k="sc.cases.${i}.time"></td>
+    <td><input class="pct" data-k="sc.cases.${i}.region"></td>
+    <td><input class="pct" data-k="sc.cases.${i}.indiv"></td>
+    <td class="out" data-out="sc.c${i}.adj"></td>
+    <td><input class="num" data-k="sc.cases.${i}.w" style="min-width:56px"></td></tr>`).join('');
+  $('#checklist').innerHTML = CHECKS.map(c=>`<div class="chk" data-chk="${c.k}">
+    <input type="checkbox" id="chk.${c.k}" data-k="check.${c.k}.d" aria-label="${esc(c.t)} 확인">
+    <div><label class="ttl" for="chk.${c.k}">${esc(c.t)}</label><div class="what">${esc(c.w)}</div>
+      <div class="links">${c.l.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])} ↗</a>`).join('')}</div>
+      <textarea data-k="check.${c.k}.m" placeholder="확인 내용 메모"></textarea></div></div>`).join('');
+}
+function buildRegion(){
+  const kind = S.coll.kind, sel = $('#coll\\.region');
+  sel.innerHTML = RULES[kind].rows.map(r=>`<option value="${r[0]}">${esc(r[1])}</option>`).join('');
+  sel.value = S.coll.region || 'seoul';
+  $('#collBasis').textContent = RULES[kind].basis;
+  $('#rulesTable').innerHTML = `<thead><tr><th>지역</th><th>적용 대상 보증금</th><th class="r">최우선변제금</th></tr></thead><tbody>`+
+    RULES[kind].rows.map(r=>`<tr${r[0]===S.coll.region?' style="background:var(--blue-soft)"':''}><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td class="out">${fmt(r[3])}원</td></tr>`).join('')+`</tbody>`;
+}
+
+/* ======================= 바인딩 ======================= */
+function fill(){
+  $$('[data-k]').forEach(el=>{
+    const v = get(S, el.dataset.k);
+    if(el.type==='checkbox'){ el.checked = !!v; return; }
+    if(el.classList.contains('money')) el.value = v===''||v==null ? '' : fmt(num(v));
+    else el.value = v==null ? '' : v;
+  });
+  buildRegion();
+  $('#samplePill').hidden = !S.sample;
+}
+function bind(){
+  document.addEventListener('input', e=>{
+    const el = e.target; if(!el.dataset.k) return;
+    let v = el.type==='checkbox' ? el.checked : el.value;
+    if(el.classList.contains('money')) v = el.value===''?'':String(num(el.value));
+    set(S, el.dataset.k, v);
+    if(el.dataset.k==='prop.type') applyType(true);
+    if(el.dataset.k==='cost.structure') applyStruct();
+    if(el.dataset.k==='prop.builtYear' && !S.cost.builtYear) S.cost.builtYear = v;
+    if(el.dataset.k==='coll.kind'){ S.coll.region='seoul'; buildRegion(); applyRegion(); }
+    if(el.dataset.k==='coll.region') { applyRegion(); buildRegion(); }
+    if(el.dataset.k==='prop.landArea' && !S.land.area){ S.land.area=v; fill(); }
+    if(el.dataset.k==='prop.bldgArea' && !S.cost.area){ S.cost.area=v; fill(); }
+    if(S.sample && (el.dataset.k==='prop.addr' || el.dataset.k==='meta.name')){ S.sample=false; $('#samplePill').hidden=true; }
+    calc(); draftSave();
+  });
+  document.addEventListener('focusout', e=>{
+    const el = e.target; if(!el.dataset || !el.dataset.k) return;
+    if(el.classList.contains('money')){ const v=get(S,el.dataset.k); el.value = v===''||v==null?'':fmt(num(v)); }
+  });
+}
+function applyType(resetWeights){
+  const a = ADVICE[S.prop.type]||ADVICE.etc;
+  $('#typeAdvice').innerHTML = a.t;
+  if(resetWeights){ S.recon.wSc=a.w[0]; S.recon.wCost=a.w[1]; S.recon.wInc=a.w[2]; }
+  $('#recHint').textContent = `${TYPES[S.prop.type]} 기본: 비교 ${a.w[0]} / 원가 ${a.w[1]} / 수익 ${a.w[2]}`;
+  if(resetWeights) fill();
+}
+function applyStruct(){ const st=STRUCT[S.cost.structure]; S.cost.life=st.life; S.cost.unitCost=st.cost; fill(); }
+function applyRegion(){ const r = RULES[S.coll.kind].rows.find(r=>r[0]===S.coll.region); if(r){ S.coll.perRoom=r[3]; fill(); } }
+
+/* ======================= 계산 ======================= */
+let R = {};
+function calc(){
+  const P = S.prop, r = {};
+  // 면적 환산
+  ['areaEx','areaSup','landArea','bldgArea'].forEach(k=>{ const v=num(P[k]); out('py.'+k, v?`${fmt(py(v),2)} 평`:''); });
+  const baseYear = new Date(S.meta.baseDate||todayStr()).getFullYear();
+  out('prop.age', num(P.builtYear)?`경과 ${baseYear-num(P.builtYear)}년`:'');
+
+  // 거래사례비교법
+  let wsum=0, acc=0; const cs=[];
+  S.sc.cases.forEach((c,i)=>{
+    const price=num(c.price), area=num(c.area), w=num(c.w);
+    const unit = price&&area ? price/area : 0;
+    const adj = unit * num(c.situ)/100 * num(c.time)/100 * num(c.region)/100 * num(c.indiv)/100;
+    out(`sc.c${i}.unit`, unit?fmt(Math.round(unit)):'—'); out(`sc.c${i}.adj`, adj?fmt(Math.round(adj)):'—');
+    if(adj&&w){ wsum+=w; acc+=adj*w; } cs.push({unit,adj,w});
+  });
+  r.scUnit = wsum? acc/wsum : 0;
+  const scArea = num(P[S.sc.basis]||0);
+  r.scValue = r.scUnit*scArea;
+  out('sc.unit', r.scUnit?fmt(Math.round(r.scUnit)):'—'); out('sc.wsum', wsum||'');
+  out('sc.unitF', r.scUnit?fmt(Math.round(r.scUnit))+'원':'—'); out('sc.unitPy', r.scUnit?fmt(Math.round(r.scUnit*PY))+'원':'—');
+  out('sc.value', r.scValue?kor(r.scValue):'—');
+  out('sc.areaShow', scArea?`대상 면적 ${fmt(scArea,2)} ㎡ (${fmt(py(scArea),2)} 평)`:'대상 면적을 물건개요에 입력하세요');
+  out('sc.formula', r.scUnit?`${fmt(Math.round(r.scUnit))} 원/㎡ × ${fmt(scArea,2)} ㎡ = ${fmt(Math.round(r.scValue))} 원`:'');
+
+  // 공시지가기준법
+  const L=S.land; const indiv=[1,2,3,4,5,6].reduce((a,i)=>a*num(L['f'+i])/100,1);
+  r.landUnit = num(L.stdPrice)*num(L.time)/100*num(L.region)/100*indiv*num(L.other)/100;
+  const landArea = num(L.area); r.landValue = r.landUnit*landArea;
+  out('land.indiv', fmt(indiv*100,2)); out('land.unit', r.landUnit?fmt(Math.round(r.landUnit)):'—'); out('land.unitPy', r.landUnit?fmt(Math.round(r.landUnit*PY)):'—');
+  out('land.value', r.landValue?kor(r.landValue):'—'); out('land.areaPy', landArea?`${fmt(py(landArea),2)} 평`:'');
+  out('land.formula', r.landUnit?`${fmt(num(L.stdPrice))} × ${num(L.time)/100} × ${num(L.region)/100} × ${indiv.toFixed(4)} × ${num(L.other)/100} = ${fmt(Math.round(r.landUnit))} 원/㎡ × ${fmt(landArea,2)} ㎡ = ${fmt(Math.round(r.landValue))} 원`:'');
+
+  // 원가법
+  const C=S.cost; const rcn=num(C.unitCost)*num(C.area); const age=num(C.builtYear)?Math.max(0,baseYear-num(C.builtYear)):0;
+  const life=num(C.life)||1; let rate = Math.max((life-age)/life, num(C.residual)/100); rate = Math.max(0, rate*(1-num(C.obs)/100));
+  r.costValue = rcn*rate; r.costSum = r.landValue + r.costValue;
+  out('cost.rcn', rcn?kor(rcn):'—'); out('cost.rate', rcn?fmt(rate*100,1)+'%':'—'); out('cost.value', r.costValue?kor(r.costValue):'—'); out('cost.sum', r.costSum?kor(r.costSum):'—');
+  out('cost.areaPy', num(C.area)?`${fmt(py(num(C.area)),2)} 평`:''); out('cost.ageShow', num(C.builtYear)?`경과연수 ${age}년 / 잔존 ${Math.max(0,life-age)}년`:'');
+  out('cost.formula', rcn?`${fmt(num(C.unitCost))} 원/㎡ × ${fmt(num(C.area),2)} ㎡ × ${(rate*100).toFixed(1)}% = ${fmt(Math.round(r.costValue))} 원`:'');
+
+  // 수익환원법
+  const I=S.inc; const pgi = num(I.rent)*12 + num(I.deposit)*num(I.depRate)/100 + num(I.other);
+  const egi = pgi*(1-num(I.vacancy)/100); const noi = egi*(1-num(I.opex)/100);
+  r.incValue = num(I.cap)? noi/(num(I.cap)/100) : 0;
+  out('inc.pgi', pgi?kor(pgi):'—'); out('inc.egi', egi?kor(egi):'—'); out('inc.noi', noi?kor(noi):'—'); out('inc.value', r.incValue?kor(r.incValue):'—');
+  out('inc.formula', r.incValue?`NOI ${fmt(Math.round(noi))} ÷ ${num(I.cap)}% = ${fmt(Math.round(r.incValue))} 원`:'');
+
+  // 시산가액 조정
+  const area = num(P.areaEx)||num(P.areaSup)||num(P.landArea)||num(P.bldgArea)||0;
+  const u = v => area&&v ? fmt(Math.round(v/area)) : '—';
+  const items=[['sc',r.scValue,num(S.recon.wSc)],['cost',r.costSum,num(S.recon.wCost)],['inc',r.incValue,num(S.recon.wInc)]];
+  let rw=0, racc=0; items.forEach(([k,v,w])=>{ out('rc.'+k, v?fmt(Math.round(v)):'—'); out('rc.'+k+'U', u(v)); if(v&&w){ rw+=w; racc+=v*w; } });
+  r.avg = rw? racc/rw : 0; out('rc.avg', r.avg?fmt(Math.round(r.avg)):'—'); out('rc.avgU', u(r.avg)); out('rc.wsum', rw||'');
+  const unitR = num(S.recon.round);
+  r.final = num(S.recon.final) ? num(S.recon.final) : roundTo(r.avg, unitR);
+  r.finalUnit = area? r.final/area : 0;
+  out('fin.value', r.final?fmt(Math.round(r.final))+'원':'—'); out('fin.unit', r.finalUnit?fmt(Math.round(r.finalUnit))+'원':'—'); out('fin.unitPy', r.finalUnit?fmt(Math.round(r.finalUnit*PY))+'원':'—'); out('fin.kor', kor(r.final));
+  out('tab.sc', r.scValue?kor(r.scValue):''); out('tab.land', r.landValue?kor(r.landValue):''); out('tab.cost', r.costValue?kor(r.costValue):''); out('tab.inc', r.incValue?kor(r.incValue):''); out('tab.recon', r.final?kor(r.final):'');
+
+  // 참고시세
+  const refs=[['KB시세 일반평균가',num(S.ref.kb)],['KB시세 하한',num(S.ref.kbLow)],['KB시세 상한',num(S.ref.kbHigh)],['부동산원 시세',num(S.ref.reb)],['최근 실거래가'+(S.ref.tradeDate?` (${S.ref.tradeDate})`:''),num(S.ref.trade)],['공시가격',num(S.ref.official)],['호가·매물',num(S.ref.ask)]];
+  r.refs = refs.filter(x=>x[1]>0).map(([n,v])=>{ const ratio=r.final? r.final/v : 0; let j='',cls='ghost';
+    if(ratio){ if(n.startsWith('공시')){ j = ratio>=1.3&&ratio<=2.2?'통상 범위':'공시가격 대비 이례적'; cls = ratio>=1.3&&ratio<=2.2?'good':'warn'; }
+      else { const d=Math.abs(ratio-1); j = d<=0.05?'시세 부합':(d<=0.12?'경미한 차이':'큰 차이, 근거 확인'); cls = d<=0.05?'good':(d<=0.12?'blue':'warn'); } }
+    return {n,v,ratio,j,cls}; });
+  $('#refRows').innerHTML = r.refs.length? r.refs.map(x=>`<tr><td>${esc(x.n)}</td><td class="out">${fmt(x.v)}</td><td class="out">${x.ratio?fmt(x.ratio*100,1)+'%':'—'}</td><td><span class="pill ${x.cls}">${esc(x.j)}</span></td></tr>`).join('') : '<tr><td colspan="4" class="muted">자료조사 단계에서 참고 시세를 입력하면 비교됩니다.</td></tr>';
+
+  // 권리관계
+  r.lien = S.liens.reduce((a,l)=>a+num(l.amt),0); out('lienTotal', r.lien?fmt(r.lien)+'원':'—');
+
+  // 담보검토
+  const K=S.coll; const ltvAmt = r.final*num(K.ltv)/100; const roomDed = num(K.perRoom)*num(K.rooms);
+  const dep = num(K.deposit); const tenantDed = Math.max(roomDed, dep);
+  r.avail = Math.max(0, ltvAmt - tenantDed - r.lien - num(K.etc));
+  out('cl.value', wonS(r.final)); out('cl.ltv', num(K.ltv)+'%'); out('cl.ltvAmt', wonS(ltvAmt));
+  out('cl.roomNote', dep>roomDed?`실제 보증금 ${fmt(dep)}원이 방공제보다 커 보증금 적용`:`${fmt(num(K.perRoom))}원 × ${num(K.rooms)}건`);
+  out('cl.room', tenantDed?'−'+fmt(tenantDed)+'원':'—'); out('cl.lien', r.lien?'−'+fmt(r.lien)+'원':'—'); out('cl.etc', num(K.etc)?'−'+fmt(num(K.etc))+'원':'—');
+  out('cl.avail', wonS(r.avail)); out('cl.availF', kor(r.avail)); out('cl.availPct', r.final?fmt(r.avail/r.final*100,1)+'%':'—');
+  const totalLtv = r.final? (r.lien+r.avail)/r.final*100 : 0; out('cl.totalLtv', r.final?fmt(totalLtv,1)+'%':'—');
+  const cw=$('#collWarn'); const warns=[];
+  if(r.final && ltvAmt - tenantDed - r.lien - num(K.etc) < 0) warns.push('차감액이 담보인정금액을 초과합니다. 추가 대출 여력이 없습니다.');
+  if(S.prop.type==='house' && num(K.rooms)<=1) warns.push('다가구는 임대 가능한 방 수만큼 방공제를 적용하는 것이 관행입니다. 공제 건수를 확인하세요.');
+  if(S.check.bld && /위반/.test(S.check.bld.m||'') && !/없/.test(S.check.bld.m||'')) warns.push('건축물대장 메모에 위반 관련 내용이 있습니다. 담보 적격 여부를 확인하세요.');
+  cw.hidden = !warns.length; cw.innerHTML = warns.map(esc).join('<br>');
+  r.ltvAmt=ltvAmt; r.tenantDed=tenantDed; r.roomDed=roomDed; r.dep=dep; r.area=area;
+
+  // 체크리스트 진행
+  const done = CHECKS.filter(c=>S.check[c.k]&&S.check[c.k].d).length;
+  $('#chkBar').style.width = (done/CHECKS.length*100)+'%'; $('#chkCnt').textContent = `${done}/${CHECKS.length}`;
+  $$('.chk').forEach(el=>el.classList.toggle('done', !!(S.check[el.dataset.chk]&&S.check[el.dataset.chk].d)));
+
+  // 하단 바
+  out('bar.value', r.final?kor(r.final):'—'); out('bar.unit', r.finalUnit?`${fmt(Math.round(r.finalUnit/10000),0)}만 / ${fmt(Math.round(r.finalUnit*PY/10000))}만`:'—'); out('bar.avail', r.avail?kor(r.avail):'—');
+  R=r; renderReport();
+}
+
+/* ======================= 검토서 ======================= */
+function areaText(){
+  const P=S.prop, a=[]; if(num(P.areaEx)) a.push(`전용 ${fmt(num(P.areaEx),2)}㎡`); if(num(P.areaSup)) a.push(`공급 ${fmt(num(P.areaSup),2)}㎡`);
+  if(num(P.landArea)) a.push(`대지 ${fmt(num(P.landArea),2)}㎡`); if(num(P.bldgArea)) a.push(`연면적 ${fmt(num(P.bldgArea),2)}㎡`); return a.join(' · ')||'—';
+}
+function renderReport(){
+  const P=S.prop, M=S.meta;
+  $('#stamp').classList.toggle('hidden', !S.sample);
+  out('rp.no', M.name||'(건명 없음)'); out('rp.baseDate', M.baseDate||'—'); out('rp.today', todayStr());
+  out('rp.addr', [P.addr,P.dongho].filter(Boolean).join(' ')||'—'); out('rp.type', TYPES[P.type]||P.type); out('rp.zone', P.zone||'—');
+  out('rp.area', areaText()); out('rp.floorBuilt', `${P.floor||'—'}층 / ${P.floors||'—'}층 · ${P.builtYear?P.builtYear+'년 준공':'준공 미상'} · ${STRUCT[P.structure]?STRUCT[P.structure].n:''}`);
+  out('rp.client', M.client||'—'); out('rp.purpose', M.purpose||'—');
+  out('rp.kor', kor(R.final)); out('rp.value', R.final?`(${fmt(Math.round(R.final))}원)`:''); out('rp.unit', R.finalUnit?`㎡당 ${fmt(Math.round(R.finalUnit))}원 · 평당 ${fmt(Math.round(R.finalUnit*PY))}원`:'');
+  const rows=[['비교방식 · 거래사례비교법',R.scValue,S.recon.wSc],['원가방식 · 공시지가기준법+원가법',R.costSum,S.recon.wCost],['수익방식 · 직접환원법',R.incValue,S.recon.wInc]].filter(x=>x[1]>0);
+  $('#rpMethods').innerHTML = rows.length? rows.map(x=>`<tr><td>${x[0]}</td><td class="r">${fmt(Math.round(x[1]))}원</td><td class="r">${R.area?fmt(Math.round(x[1]/R.area)):'—'}</td><td class="r">${num(x[2])}%</td></tr>`).join('')+`<tr><th colspan="3">결정 감정평가액${num(S.recon.final)?' (직접 결정)':''}</th><td class="r"><b>${fmt(Math.round(R.final))}원</b></td></tr>` : '<tr><td colspan="4">산정된 시산가액이 없습니다.</td></tr>';
+  out('rp.opinion', S.recon.opinion||'');
+  $('#rpRefs').innerHTML = R.refs&&R.refs.length? R.refs.map(x=>`<tr><td>${esc(x.n)}</td><td class="r">${fmt(x.v)}원</td><td class="r">${fmt(x.ratio*100,1)}%</td></tr>`).join('') : '<tr><td colspan="3">참고 시세 없음</td></tr>';
+  const K=S.coll; $('#rpCollWrap').hidden = M.purpose!=='담보';
+  $('#rpColl').innerHTML = `<tr><th>담보인정비율</th><td class="r">${num(K.ltv)}%</td><th>담보인정금액</th><td class="r">${fmt(Math.round(R.ltvAmt||0))}원</td></tr>
+    <tr><th>최우선변제금 공제</th><td class="r">${fmt(R.tenantDed||0)}원</td><th>선순위 채권</th><td class="r">${fmt(R.lien||0)}원</td></tr>
+    <tr><th>대출가능금액</th><td class="r"><b>${fmt(Math.round(R.avail||0))}원</b></td><th>총 LTV(선순위 포함)</th><td class="r">${R.final?fmt((R.lien+R.avail)/R.final*100,1):'—'}%</td></tr>`;
+  const cl=[]; CHECKS.forEach(c=>{ const v=S.check[c.k]; if(v&&(v.d||v.m)) cl.push(`<li><b>${esc(c.t)}</b> ${v.d?'확인':'미확인'}${v.m?' — '+esc(v.m):''}</li>`); });
+  S.liens.forEach(l=>{ if(l.name||num(l.amt)) cl.push(`<li>권리: ${esc(l.name)} ${num(l.amt)?fmt(num(l.amt))+'원':''} ${esc(l.memo)}</li>`); });
+  if(P.note) cl.push(`<li>특이사항: ${esc(P.note)}</li>`);
+  $('#rpChecks').innerHTML = cl.join('')||'<li>기록된 조사 내용 없음</li>';
+  out('rp.appraiser', M.appraiser||'________'); out('rp.firm', M.firm||'');
+}
+function reportText(){
+  const P=S.prop, M=S.meta, L=[];
+  L.push(`[탁상감정 검토서] ${M.name||''}`); L.push(`기준시점 ${M.baseDate} / 작성일 ${todayStr()} / 목적 ${M.purpose}`);
+  L.push(`소재지: ${[P.addr,P.dongho].filter(Boolean).join(' ')}`); L.push(`종류: ${TYPES[P.type]} / 면적: ${areaText()} / ${P.floor||'-'}층/${P.floors||'-'}층 / ${P.builtYear||'-'}년 준공`);
+  L.push(`감정평가액(탁상): ${kor(R.final)} (${fmt(Math.round(R.final))}원) ㎡당 ${fmt(Math.round(R.finalUnit))}원, 평당 ${fmt(Math.round(R.finalUnit*PY))}원`);
+  if(R.scValue) L.push(`- 비준가액 ${fmt(Math.round(R.scValue))}원 (가중치 ${S.recon.wSc}%)`); if(R.costSum) L.push(`- 적산가액 ${fmt(Math.round(R.costSum))}원 (가중치 ${S.recon.wCost}%)`); if(R.incValue) L.push(`- 수익가액 ${fmt(Math.round(R.incValue))}원 (가중치 ${S.recon.wInc}%)`);
+  if(S.recon.opinion) L.push(`의견: ${S.recon.opinion}`);
+  (R.refs||[]).forEach(x=>L.push(`참고 ${x.n}: ${fmt(x.v)}원 (결정가액 대비 ${fmt(x.ratio*100,1)}%)`));
+  if(M.purpose==='담보') L.push(`담보검토: LTV ${S.coll.ltv}% → 담보인정 ${fmt(Math.round(R.ltvAmt))}원, 방공제/보증금 −${fmt(R.tenantDed)}원, 선순위 −${fmt(R.lien)}원 → 대출가능 ${fmt(Math.round(R.avail))}원`);
+  CHECKS.forEach(c=>{ const v=S.check[c.k]; if(v&&(v.d||v.m)) L.push(`[${v.d?'v':' '}] ${c.t}${v.m?': '+v.m:''}`); });
+  L.push('※ 현장조사 없이 공부·시세자료에 근거한 탁상감정 결과이며 정식 감정평가서가 아님.');
+  return L.join('\n');
+}
+function reportCsv(){
+  const rows=[['항목','값'],['건명',S.meta.name],['기준시점',S.meta.baseDate],['소재지',[S.prop.addr,S.prop.dongho].filter(Boolean).join(' ')],['물건종류',TYPES[S.prop.type]],['전용면적㎡',S.prop.areaEx],['공급면적㎡',S.prop.areaSup],['대지면적㎡',S.prop.landArea],
+    ['비준가액',Math.round(R.scValue||0)],['적산가액',Math.round(R.costSum||0)],['수익가액',Math.round(R.incValue||0)],['감정평가액',Math.round(R.final||0)],['㎡당단가',Math.round(R.finalUnit||0)],
+    ['LTV%',S.coll.ltv],['담보인정금액',Math.round(R.ltvAmt||0)],['방공제',R.tenantDed||0],['선순위',R.lien||0],['대출가능금액',Math.round(R.avail||0)]];
+  (R.refs||[]).forEach(x=>rows.push([x.n,x.v]));
+  return '﻿'+rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+}
+
+/* ======================= 저장 ======================= */
+let db=null, downloads=null;
+const LS_DRAFT='heron.deskval.draft', LS_CASES='heron.deskval.cases';
+function draftSave(){ clearTimeout(draftSave._t); draftSave._t=setTimeout(()=>{ try{ localStorage.setItem(LS_DRAFT, JSON.stringify(S)); }catch(e){} },400); }
+function loadDraft(){ try{ const d=localStorage.getItem(LS_DRAFT); if(d){ const s=JSON.parse(d); if(s&&s.v===1) return s; } }catch(e){} return null; }
+function lsCases(){ try{ return JSON.parse(localStorage.getItem(LS_CASES)||'{}'); }catch(e){ return {}; } }
+function caseId(){ if(!S.id) S.id = 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); return S.id; }
+async function saveCase(){
+  if(!S.meta.name){ toast('건명을 먼저 입력하세요'); $('#meta\\.name').focus(); return; }
+  const id=caseId(); const body={...JSON.parse(JSON.stringify(S)), updatedAt:new Date().toISOString(), final:Math.round(R.final||0)};
+  if(db){ try{ await db.collection('cases').doc(id).set(body); toast('공유 저장소에 저장했습니다'); return; }
+    catch(e){ if(e&&e.code==='quota_exceeded'){ toast('저장 한도 초과: 오래된 건을 삭제하세요'); return; } toast('공유 저장 실패, 브라우저에 저장합니다'); } }
+  try{ const all=lsCases(); all[id]=body; localStorage.setItem(LS_CASES, JSON.stringify(all)); toast('이 브라우저에 저장했습니다'); }catch(e){ toast('저장 실패: 브라우저 저장소를 사용할 수 없습니다'); }
+}
+async function listCases(){
+  let items=[];
+  if(db){ try{ const snap=await db.collection('cases').orderBy('updatedAt','desc').limit(100).get(); items=snap.docs.map(d=>({id:d.id,...d.data()})); }catch(e){ toast('목록을 불러오지 못했습니다'); } }
+  else { items=Object.values(lsCases()).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')); }
+  const box=$('#caseList');
+  box.innerHTML = items.length? items.map(c=>`<div class="row" data-id="${esc(c.id)}"><div class="t"><b>${esc(c.meta&&c.meta.name||'(무제)')}</b><span>${esc(c.prop&&c.prop.addr||'')} · ${c.final?kor(c.final):'미산정'} · ${(c.updatedAt||'').slice(0,16).replace('T',' ')}</span></div><button class="btn sm" data-act="load">열기</button><button class="btn sm danger" data-act="del">삭제</button></div>`).join('') : '<p class="muted">저장된 건이 없습니다.</p>';
+  box.onclick = async e=>{ const b=e.target.closest('button'); if(!b) return; const id=b.closest('.row').dataset.id; const c=items.find(x=>x.id===id);
+    if(b.dataset.act==='load'){ delete c.updatedAt; delete c.final; S=c; S.id=id; afterLoad(); $('#modal').hidden=true; toast('불러왔습니다'); }
+    if(b.dataset.act==='del'){ if(!confirm('이 건을 삭제할까요?')) return; if(db){ try{ await db.collection('cases').doc(id).delete(); }catch(e){ toast('삭제 실패'); return; } } else { const all=lsCases(); delete all[id]; localStorage.setItem(LS_CASES, JSON.stringify(all)); } listCases(); } };
+  $('#modal').hidden=false;
+}
+const inArtifact = !!(window.claude && typeof window.claude.use==='function');
+async function download(name, data){
+  if(downloads){ try{ await downloads.save({filename:name, data}); toast('저장했습니다'); }catch(e){ if(e&&e.code==='declined') return; toast('저장하지 못했습니다'); } return; }
+  if(inArtifact){ toast('이 화면에서는 파일 저장을 쓸 수 없습니다. 인쇄 또는 복사를 이용하세요'); return; }
+  try{ const type = name.endsWith('.csv')?'text/csv;charset=utf-8':'text/html;charset=utf-8'; const url=URL.createObjectURL(new Blob([data],{type})); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000); toast('저장했습니다'); }catch(e){ toast('저장하지 못했습니다'); }
+}
+function exportHtml(){
+  const css = document.querySelector('style').textContent;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(S.meta.name||'탁상감정 검토서')}</title><style>${css} body{padding:24px} .report{box-shadow:none}</style></head><body>${$('#report').outerHTML}</body></html>`;
+}
+
+/* ======================= UI ======================= */
+function showSec(id){ $$('.nav button[data-sec]').forEach(b=>b.classList.toggle('active', b.dataset.sec===id)); $$('section.panel').forEach(s=>s.classList.toggle('active', s.id==='sec-'+id)); try{ localStorage.setItem('heron.deskval.sec', id); }catch(e){} window.scrollTo({top:0}); }
+function afterLoad(){ fill(); applyType(false); calc(); draftSave(); }
+function init(){
+  buildRows(); bind();
+  S = loadDraft() || sampleState();
+  afterLoad();
+  try{ const sec=localStorage.getItem('heron.deskval.sec'); if(sec) showSec(sec); }catch(e){}
+  $$('.nav button[data-sec]').forEach(b=>b.onclick=()=>showSec(b.dataset.sec));
+  $$('#mtabs button').forEach(b=>b.onclick=()=>{ $$('#mtabs button').forEach(x=>x.classList.toggle('active',x===b)); $$('.mtab').forEach(m=>m.classList.toggle('active', m.id==='m-'+b.dataset.m)); });
+  $('#btn-new').onclick=()=>{ if(!confirm('현재 입력 내용을 비우고 새 건을 시작할까요? (저장하지 않은 내용은 사라집니다)')) return; S=blankState(); afterLoad(); showSec('prop'); toast('새 건'); };
+  $('#btn-save').onclick=saveCase; $('#btn-open').onclick=listCases; $('#modal-close').onclick=()=>$('#modal').hidden=true;
+  $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').hidden=true; });
+  $('#btn-recWeights').onclick=()=>{ applyType(true); calc(); draftSave(); toast('기본 가중치를 적용했습니다'); };
+  $('#btn-print').onclick=()=>window.print();
+  $('#btn-copy').onclick=async()=>{ const t=reportText(); try{ await navigator.clipboard.writeText(t); toast('복사했습니다'); }catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('복사했습니다'); }catch(e2){ toast('복사 실패'); } ta.remove(); } };
+  $('#btn-dl-html').onclick=()=>download((S.meta.name||'탁상감정')+'.html', exportHtml());
+  $('#btn-dl-csv').onclick=()=>download((S.meta.name||'탁상감정')+'.csv', reportCsv());
+  // 환산 도구
+  const cv=(idIn,idOut,fn)=>{ document.getElementById(idIn).addEventListener('input', e=>{ document.getElementById(idOut).textContent = fn(num(e.target.value)); }); };
+  cv('cv.m2','cv.m2out',v=>v?`${fmt(py(v),3)} 평`:''); cv('cv.py','cv.pyout',v=>v?`${fmt(v*PY,3)} ㎡`:'');
+  const wonIn=document.getElementById('cv.won'); wonIn.addEventListener('input',e=>{ document.getElementById('cv.wonout').textContent = kor(num(e.target.value)); }); wonIn.addEventListener('blur',()=>{ if(wonIn.value) wonIn.value=fmt(num(wonIn.value)); });
+  // 시점수정 도우미
+  const ti=()=>{ const a=num(document.getElementById('ti.a').value), b=num(document.getElementById('ti.b').value); const v=a&&b? b/a*100 : 0; document.getElementById('ti.out').textContent = v? fmt(v,2)+' %' : '—'; return v; };
+  ['ti.a','ti.b'].forEach(id=>document.getElementById(id).addEventListener('input',ti));
+  $$('[data-ti]').forEach(b=>b.onclick=()=>{ const v=ti(); if(!v){ toast('지수를 입력하세요'); return; } S.sc.cases[+b.dataset.ti].time=+v.toFixed(2); fill(); calc(); draftSave(); toast(`사례${+b.dataset.ti+1} 시점수정치 ${v.toFixed(2)}`); });
+  const lr=()=>{ const toks=document.getElementById('lr.in').value.split(/[,\s]+/).filter(t=>t.trim()!==''); const v=toks.length? toks.map(num).reduce((a,x)=>a*(1+x/100),1)*100 : 0; document.getElementById('lr.out').textContent = v? fmt(v,3)+' %':'—'; return v; };
+  document.getElementById('lr.in').addEventListener('input',lr);
+  document.getElementById('lr.apply').onclick=()=>{ const v=lr(); if(!v){ toast('변동률을 입력하세요'); return; } S.land.time=+v.toFixed(3); fill(); calc(); draftSave(); toast('시점수정치를 적용했습니다'); };
+  // 저장 위치
+  const st=$('#saveState'); st.textContent='브라우저 저장 (임시)';
+  if(inArtifact){
+    window.claude.use('db').then(d=>{ db=d; st.textContent = d? '공유 저장소 연결됨 · 입력은 자동 임시저장' : '브라우저 저장 · 입력은 자동 임시저장'; });
+    window.claude.use('downloads').then(d=>{ downloads=d; if(!d){ $('#btn-dl-html').disabled=true; $('#btn-dl-csv').disabled=true; } });
+  } else { st.textContent='브라우저 저장 · 입력은 자동 임시저장'; }
+}
+init();
+</script>
