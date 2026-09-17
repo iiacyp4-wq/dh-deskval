@@ -743,6 +743,16 @@ function kor(n){
 const py = m2 => m2/PY;
 const roundTo = (n,u) => u? Math.round(n/u)*u : Math.round(n);
 function get(o,p){ return p.split('.').reduce((a,k)=>a==null?undefined:a[k],o); }
+function mergeDeep(target, src){
+  if(!src || typeof src!=='object') return target;
+  Object.keys(src).forEach(k=>{
+    const v = src[k];
+    if(Array.isArray(v)){ if(!Array.isArray(target[k])) target[k]=[]; v.forEach((item,i)=>{ if(item && typeof item==='object' && !Array.isArray(item)){ if(!target[k][i]||typeof target[k][i]!=='object') target[k][i]={}; mergeDeep(target[k][i], item); } else target[k][i]=item; }); }
+    else if(v && typeof v==='object'){ if(!target[k]||typeof target[k]!=='object') target[k]={}; mergeDeep(target[k], v); }
+    else if(v!==undefined) target[k]=v;
+  });
+  return target;
+}
 function set(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]={}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
 function out(k,v){ $$('[data-out="'+k+'"]').forEach(el=>{ el.textContent = v==null?'':v; }); }
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2200); }
@@ -1013,7 +1023,24 @@ function afterLoad(){ fill(); applyType(false); calc(); draftSave(); }
 function init(){
   buildRows(); bind();
   S = loadDraft() || sampleState();
+  // 서버(Streamlit)에서 자동 조회한 데이터가 있으면 한 번만 반영
+  let prefillMsg = '', typeChanged = false;
+  try{
+    const pf = window.PREFILL;
+    if(pf && pf.data){
+      let last = null; try{ last = localStorage.getItem('heron.deskval.prefillNonce'); }catch(e){}
+      if(String(pf.nonce) !== last){
+        const prevType = S.prop.type;
+        mergeDeep(S, pf.data); S.sample = false;
+        typeChanged = pf.data.prop && pf.data.prop.type && pf.data.prop.type !== prevType;
+        try{ localStorage.setItem('heron.deskval.prefillNonce', String(pf.nonce)); }catch(e){}
+        prefillMsg = '자동 조회 데이터를 워크시트에 반영했습니다';
+      }
+    }
+  }catch(e){}
   afterLoad();
+  if(typeChanged){ applyType(true); calc(); draftSave(); }
+  if(prefillMsg) toast(prefillMsg);
   try{ const sec=localStorage.getItem('heron.deskval.sec'); if(sec) showSec(sec); }catch(e){}
   $$('.nav button[data-sec]').forEach(b=>b.onclick=()=>showSec(b.dataset.sec));
   $$('#mtabs button').forEach(b=>b.onclick=()=>{ $$('#mtabs button').forEach(x=>x.classList.toggle('active',x===b)); $$('.mtab').forEach(m=>m.classList.toggle('active', m.id==='m-'+b.dataset.m)); });

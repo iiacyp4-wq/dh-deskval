@@ -1,1 +1,3 @@
-streamlit>=1.36
+streamlit>=1.36,<2
+PublicDataReader>=1.1
+pandas>=2.0
